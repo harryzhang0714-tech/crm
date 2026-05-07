@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ExternalLink, RefreshCw } from 'lucide-react';
 
-const SOURCE = 'https://igegqjv2cxkc.space.minimaxi.com/ds_gallery.html';
+const SOURCE = 'https://cdn.hailuoai.com/mcp/cdn_upload/486771524351037441/390345638482211/1778145244_08418737.html';
 
 export default function DSGallery() {
   const [key, setKey] = useState(0);
