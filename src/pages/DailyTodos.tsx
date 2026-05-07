@@ -9,7 +9,6 @@ export default function DailyTodos() {
   const today = new Date().toISOString().slice(0, 10);
   const initRef = useRef(false);
 
-  // Auto-carry forward yesterday's incomplete todos to today — runs once on mount
   useEffect(() => {
     if (initRef.current) return;
     initRef.current = true;
@@ -31,9 +30,7 @@ export default function DailyTodos() {
     setInitialized(true);
   }, [today]);
 
-  // Filter: show only current user's todos for today, plus others' today todos from this session
   const todayTodos = dailyTodos.filter(t => t.date === today && t.createdBy === currentUser?.id);
-  const othersTodos = dailyTodos.filter(t => t.date === today && t.createdBy !== currentUser?.id);
   const completed = todayTodos.filter(t => t.completed).length;
   const total = todayTodos.length;
   const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -45,13 +42,8 @@ export default function DailyTodos() {
     setInput('');
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleAdd();
-  };
-
   return (
     <div className="p-6 max-w-xl mx-auto">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 rounded-xl bg-orange-500 flex items-center justify-center">
           <Sun size={20} className="text-white" />
@@ -64,7 +56,6 @@ export default function DailyTodos() {
         </div>
       </div>
 
-      {/* Progress */}
       {total > 0 && (
         <div className="mb-6">
           <div className="flex justify-between text-xs text-gray-400 mb-2">
@@ -80,13 +71,12 @@ export default function DailyTodos() {
         </div>
       )}
 
-      {/* Input */}
       <div className="flex gap-2 mb-6">
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={`添加 ${currentUser?.name || '你的'} 的今日待办...`}
+          onKeyDown={e => e.key === 'Enter' && handleAdd()}
+          placeholder={`添加 ${currentUser?.name || '你'} 的今日待办...`}
           className="flex-1 bg-[#2A2A2A] text-white rounded-xl px-4 py-3 text-sm border border-gray-700 focus:border-orange-500 outline-none placeholder-gray-500"
         />
         <button
@@ -98,7 +88,6 @@ export default function DailyTodos() {
         </button>
       </div>
 
-      {/* Empty state */}
       {todayTodos.length === 0 && (
         <div className="text-center py-12 text-gray-500">
           <div className="text-4xl mb-3">☀️</div>
@@ -107,7 +96,6 @@ export default function DailyTodos() {
         </div>
       )}
 
-      {/* Todo List */}
       <div className="space-y-2">
         {todayTodos.map(todo => (
           <div
@@ -134,24 +122,6 @@ export default function DailyTodos() {
           </div>
         ))}
       </div>
-
-      {/* Others' todos */}
-      {othersTodos.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">其他成员今日待办</h3>
-          <div className="space-y-2">
-            {othersTodos.map(todo => (
-              <div key={todo.id} className="flex items-center gap-3 bg-[#1E1E1E]/50 rounded-xl px-4 py-3 border border-gray-800/50 opacity-60">
-                <div className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-white text-[10px] flex-shrink-0">
-                  {dailyTodos.find(t => t.id === todo.id)?.createdBy?.[1] || '?'}
-                </div>
-                <span className="flex-1 text-sm text-gray-400 truncate">{todo.content}</span>
-                {todo.completed && <CheckCircle size={16} className="text-green-500 flex-shrink-0" />}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
