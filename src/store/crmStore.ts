@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import type { Member, Customer, Deal, Task, Reminder, DailyTodo } from '../types';
 
 const DEFAULT_MEMBERS: Member[] = [
-  { id: 'm1', name: '张明', email: 'zhang@company.com', role: '销售主管', color: '#E8602C' },
+  { id: 'm1', name: 'Harry', email: 'harry@company.com', role: '管理员', color: '#E8602C' },
   { id: 'm2', name: '李娜', email: 'lina@company.com', role: '客户经理', color: '#3B82F6' },
   { id: 'm3', name: '王强', email: 'wang@company.com', role: '商务专员', color: '#22C55E' },
   { id: 'm4', name: '陈晓', email: 'chen@company.com', role: '运营支持', color: '#F59E0B' },
