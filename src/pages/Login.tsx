@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCRMStore, TEAM_MEMBERS } from '../store/crmStore';
+import { useCRMStore } from '../store/crmStore';
 import { Users } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useCRMStore();
+  const { login, teamMembers } = useCRMStore();
   const [name, setName] = useState('');
   const [error, setError] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    const member = TEAM_MEMBERS.find(m => m.name === name.trim());
+    const member = teamMembers.find(m => m.name === name.trim());
     if (member) {
       login(member.name);
       navigate('/dashboard');
@@ -58,7 +58,7 @@ export default function Login() {
         <div className="mt-6">
           <p className="text-white/30 text-xs text-center mb-3">或选择团队成员</p>
           <div className="flex flex-wrap gap-2 justify-center">
-            {TEAM_MEMBERS.map(m => (
+            {teamMembers.map(m => (
               <button
                 key={m.id}
                 onClick={() => { setName(m.name); }}
