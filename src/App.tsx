@@ -5,7 +5,6 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Customers from './pages/Customers';
 import Deals from './pages/Deals';
-import Tasks from './pages/Tasks';
 import Reminders from './pages/Reminders';
 import TeamMembers from './pages/TeamMembers';
 import DailyTodos from './pages/DailyTodos';
@@ -30,7 +29,6 @@ function AppRoutes() {
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="customers" element={<Customers />} />
         <Route path="deals" element={<Deals />} />
-        <Route path="tasks" element={<Tasks />} />
         <Route path="daily" element={<DailyTodos />} />
         <Route path="opportunities" element={<Opportunities />} />
         <Route path="fbgroups" element={<FBGroups />} />
