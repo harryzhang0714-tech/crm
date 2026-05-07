@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, Handshake, CheckSquare, Bell, LogOut, Menu, X, UserPlus, CalendarCheck, TrendingUp, UsersRound, Image
+  LayoutDashboard, Users, Handshake, Bell, LogOut, Menu, X, UserPlus, CalendarCheck, TrendingUp, UsersRound, Image
 } from 'lucide-react';
 import { useState } from 'react';
 import { useCRMStore } from '../store/crmStore';
@@ -9,7 +9,6 @@ const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: '仪表盘' },
   { to: '/customers', icon: Users, label: '客户管理' },
   { to: '/deals', icon: Handshake, label: '交易跟进' },
-  { to: '/tasks', icon: CheckSquare, label: '任务协作' },
   { to: '/daily', icon: CalendarCheck, label: '每日待办' },
   { to: '/opportunities', icon: TrendingUp, label: '商机看板' },
   { to: '/fbgroups', icon: UsersRound, label: 'FB小组管理' },
