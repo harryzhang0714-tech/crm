@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useCRMStore, TEAM_MEMBERS } from '../store/crmStore';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Search } from 'lucide-react';
 import type { Deal, DealStage } from '../types';
 
 const stages: { key: DealStage; label: string; color: string }[] = [
@@ -18,6 +18,27 @@ function DealModal({ edit, onClose }: { edit?: Deal; onClose: () => void }) {
     customerId: '', title: '', amount: 0, stage: 'lead', probability: 20, ownerId: currentUser?.id || '',
     expectedCloseDate: '', notes: ''
   });
+  const [custSearch, setCustSearch] = useState('');
+  const [showCustList, setShowCustList] = useState(false);
+  const custRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => { if (custRef.current && !custRef.current.contains(e.target as Node)) setShowCustList(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const filtered = customers.filter(c =>
+    !custSearch || c.name.includes(custSearch) || c.company.includes(custSearch)
+  );
+
+  const handleCustSelect = (cid: string) => {
+    setForm(f => ({ ...f, customerId: cid }));
+    setCustSearch('');
+    setShowCustList(false);
+  };
+
+  const selectedCust = customers.find(c => c.id === form.customerId);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,11 +64,49 @@ function DealModal({ edit, onClose }: { edit?: Deal; onClose: () => void }) {
           </div>
           <div>
             <label className="text-xs font-medium text-[#6B6B6B] mb-1.5 block">关联客户</label>
-            <select value={form.customerId || ''} onChange={e => setForm({ ...form, customerId: e.target.value })}
-              className="w-full border border-[#E8E6E1] rounded-xl px-4 py-2.5 text-sm outline-none focus:border-[#E8602C] transition-colors bg-white">
-              <option value="">选择客户</option>
-              {customers.map(c => <option key={c.id} value={c.id}>{c.name} - {c.company}</option>)}
-            </select>
+            <div ref={custRef} className="relative">
+              <div
+                className="w-full border border-[#E8E6E1] rounded-xl px-4 py-2.5 text-sm min-h-[42px] flex items-center cursor-pointer bg-white"
+                onClick={() => setShowCustList(v => !v)}
+              >
+                {selectedCust
+                  ? <span className="truncate">{selectedCust.name} · {selectedCust.company}</span>
+                  : <span className="text-[#aaa]">搜索或选择客户...</span>
+                }
+              </div>
+              {showCustList && (
+                <div className="absolute z-10 w-full mt-1 bg-white rounded-xl border border-[#E8E6E1] shadow-lg max-h-52 overflow-y-auto">
+                  <div className="sticky top-0 bg-white border-b border-[#F0EEE9] px-3 py-2">
+                    <div className="flex items-center gap-2 bg-[#F8F7F4] rounded-lg px-3 py-2">
+                      <Search size={14} className="text-[#aaa] flex-shrink-0" />
+                      <input
+                        autoFocus
+                        value={custSearch}
+                        onChange={e => setCustSearch(e.target.value)}
+                        placeholder="搜索客户名称或公司..."
+                        className="flex-1 bg-transparent outline-none text-sm"
+                      />
+                    </div>
+                  </div>
+                  {filtered.length === 0 && (
+                    <div className="text-center py-4 text-xs text-[#aaa]">未找到匹配的客户</div>
+                  )}
+                  {filtered.map(c => (
+                    <div key={c.id}
+                      onClick={() => handleCustSelect(c.id)}
+                      className="flex items-center gap-3 px-4 py-2.5 hover:bg-[#F8F7F4] cursor-pointer border-b border-[#F8F7F4] last:border-0">
+                      <div className="w-7 h-7 rounded-full bg-[#E8602C]/10 text-[#E8602C] text-xs flex items-center justify-center font-semibold flex-shrink-0">
+                        {c.name[0]}
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-[#1A1A1A]">{c.name}</div>
+                        <div className="text-xs text-[#6B6B6B]">{c.company}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
