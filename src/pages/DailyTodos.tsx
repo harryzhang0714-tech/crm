@@ -16,11 +16,11 @@ export default function DailyTodos() {
 
     const lastDate = localStorage.getItem('teamcrm-todo-date');
     if (lastDate && lastDate !== today) {
-      // New day: carry forward all incomplete todos from lastDate to today
       useCRMStore.setState(s => {
+        const uid = s.currentUser?.id;
         const updated = s.dailyTodos.map(t => {
           if (!t.completed && t.date === lastDate) {
-            return { ...t, id: 'dt' + Math.random().toString(36).slice(2, 10), date: today };
+            return { ...t, id: 'dt' + Math.random().toString(36).slice(2, 10), date: today, createdBy: uid || t.createdBy };
           }
           return t;
         });
@@ -31,7 +31,9 @@ export default function DailyTodos() {
     setInitialized(true);
   }, [today]);
 
-  const todayTodos = dailyTodos.filter(t => t.date === today);
+  // Filter: show only current user's todos for today, plus others' today todos from this session
+  const todayTodos = dailyTodos.filter(t => t.date === today && t.createdBy === currentUser?.id);
+  const othersTodos = dailyTodos.filter(t => t.date === today && t.createdBy !== currentUser?.id);
   const completed = todayTodos.filter(t => t.completed).length;
   const total = todayTodos.length;
   const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
@@ -84,7 +86,7 @@ export default function DailyTodos() {
           value={input}
           onChange={e => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="输入待办事项，按回车添加..."
+          placeholder={`添加 ${currentUser?.name || '你的'} 的今日待办...`}
           className="flex-1 bg-[#2A2A2A] text-white rounded-xl px-4 py-3 text-sm border border-gray-700 focus:border-orange-500 outline-none placeholder-gray-500"
         />
         <button
@@ -133,10 +135,21 @@ export default function DailyTodos() {
         ))}
       </div>
 
-      {/* Yesterday incomplete hint */}
-      {todayTodos.length === 0 && dailyTodos.filter(t => !t.completed && t.date < today).length > 0 && (
-        <div className="mt-4 text-center text-xs text-gray-600">
-          有 {dailyTodos.filter(t => !t.completed && t.date < today).length} 条昨日未完成任务已自动延期到今天
+      {/* Others' todos */}
+      {othersTodos.length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">其他成员今日待办</h3>
+          <div className="space-y-2">
+            {othersTodos.map(todo => (
+              <div key={todo.id} className="flex items-center gap-3 bg-[#1E1E1E]/50 rounded-xl px-4 py-3 border border-gray-800/50 opacity-60">
+                <div className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-white text-[10px] flex-shrink-0">
+                  {dailyTodos.find(t => t.id === todo.id)?.createdBy?.[1] || '?'}
+                </div>
+                <span className="flex-1 text-sm text-gray-400 truncate">{todo.content}</span>
+                {todo.completed && <CheckCircle size={16} className="text-green-500 flex-shrink-0" />}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
