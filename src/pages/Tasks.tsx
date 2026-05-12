@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useCRMStore } from '../store/supabaseStore';
-import { DEFAULT_MEMBER } from '../store/supabaseStore';
 import { Plus, MessageSquare, CheckCircle2, Circle, Trash2, Send, X } from 'lucide-react';
 import type { Task, TaskPriority } from '../types';
 
@@ -81,7 +80,6 @@ function TaskModal({ edit, onClose }: { edit?: Task; onClose: () => void }) {
 function CommentSection({ task }: { task: Task }) {
   const { currentUser, addComment } = useCRMStore();
   const [text, setText] = useState('');
-  const members = [DEFAULT_MEMBER];
 
   const handleSend = () => {
     if (!text.trim()) return;
@@ -172,7 +170,6 @@ export default function Tasks() {
           <div className="text-center py-16 text-sm text-[#6B6B6B]">暂无任务</div>
         )}
         {filtered.map(task => {
-          const assignee = DEFAULT_MEMBER;
           const pcfg = priorityConfig[task.priority];
           const isExpanded = expandedTask === task.id;
 
