@@ -1,15 +1,11 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCRMStore } from '../store/crmStore';
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useCRMStore();
-  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleLogin = () => {
     login('admin');
     navigate('/dashboard');
   };
@@ -27,7 +23,7 @@ export default function Login() {
         </div>
 
         {/* Login form */}
-        <form onSubmit={handleLogin} className="bg-[#2C2C2E] rounded-2xl p-6 space-y-4">
+        <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="bg-[#2C2C2E] rounded-2xl p-6 space-y-4">
           <div>
             <label className="text-white/60 text-xs font-medium mb-2 block">系统账号</label>
             <div className="w-full bg-[#1C1C1E] text-white/50 rounded-xl px-4 py-3 text-sm border border-white/10 flex items-center gap-2">
@@ -39,10 +35,9 @@ export default function Login() {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-[#E8602C] hover:bg-[#D4501F] disabled:opacity-60 text-white font-semibold py-3 rounded-xl text-sm transition-colors active:scale-[0.97]"
+            className="w-full bg-[#E8602C] hover:bg-[#D4501F] active:scale-[0.97] text-white font-semibold py-3 rounded-xl text-sm transition-all"
           >
-            {loading ? '进入中...' : '进入系统'}
+            进入系统
           </button>
         </form>
 
