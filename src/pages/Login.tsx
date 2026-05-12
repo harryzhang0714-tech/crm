@@ -40,7 +40,7 @@ export default function Login() {
               type="text"
               value={name}
               onChange={e => { setName(e.target.value); setError(''); }}
-              placeholder="例如：张明"
+              placeholder="Admin"
               className="w-full bg-[#1C1C1E] text-white placeholder-white/25 rounded-xl px-4 py-3 text-sm outline-none border border-white/10 focus:border-[#E8602C] transition-colors"
             />
             {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
