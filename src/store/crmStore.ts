@@ -12,6 +12,7 @@ const DEFAULT_MEMBER: Member = {
 
 interface CRMStore {
   currentUser: Member | null;
+  teamMembers: Member[];
   customers: Customer[];
   deals: Deal[];
   tasks: Task[];
@@ -48,11 +49,13 @@ const sampleCustomers: Customer[] = [
   {
     id: 'c1', name: '赵伟', company: '伟创科技', phone: '138-0001-1234',
     email: 'zhao@weichuang.com', industry: '科技', status: 'qualified',
+    notes: '', createdBy: 'admin',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
   },
   {
     id: 'c2', name: '周莉', company: '周氏实业', phone: '139-0002-5678',
-    email: 'zhou@zhoushiye.com', industry: '制造', status: 'active',
+    email: 'zhou@zhoushiye.com', industry: '制造', status: 'contacted',
+    notes: '', createdBy: 'admin',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
   },
 ];
@@ -60,26 +63,30 @@ const sampleCustomers: Customer[] = [
 const sampleDeals: Deal[] = [
   {
     id: 'd1', customerId: 'c1', title: '伟创科技ERP系统采购', amount: 128000,
-    stage: 'qualified', priority: 'high',
+    stage: 'qualified', probability: 60, ownerId: 'admin',
+    expectedCloseDate: new Date(Date.now() + 86400000 * 30).toISOString().slice(0, 10),
+    notes: '', createdBy: 'admin',
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
   },
 ];
 
 const sampleTasks: Task[] = [
   {
-    id: 't1', title: '跟进伟创科技报价', relatedId: 'd1', relatedType: 'deal',
-    assigneeId: 'admin', priority: 'high', status: 'todo',
-    dueDate: new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 10),
-    completed: false, comments: [],
+    id: 't1', title: '跟进伟创科技报价', description: '',
+    assigneeId: 'admin', relatedType: 'deal', relatedId: 'd1',
+    priority: 'high', dueDate: new Date(Date.now() + 86400000 * 2).toISOString().slice(0, 10),
+    completed: false, createdBy: 'admin',
+    comments: [],
     createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
   },
 ];
 
 const sampleReminders: Reminder[] = [
   {
-    id: 'r1', title: '伟创科技项目报价截止日', remindAt: new Date(Date.now() + 86400000).toISOString(),
-    triggered: false,
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(),
+    id: 'r1', title: '伟创科技项目报价截止日', description: '',
+    relatedType: 'deal', relatedId: 'd1',
+    remindAt: new Date(Date.now() + 86400000).toISOString(),
+    triggered: false, createdBy: 'admin', createdAt: new Date().toISOString(),
   },
 ];
 
@@ -87,6 +94,8 @@ export const useCRMStore = create<CRMStore>()(
   persist(
     (set, get) => ({
       currentUser: null,
+      teamMembers: [DEFAULT_MEMBER],
+
       customers: sampleCustomers,
       deals: sampleDeals,
       tasks: sampleTasks,
@@ -144,14 +153,14 @@ export const useCRMStore = create<CRMStore>()(
         return {
           tasks: s.tasks.map(t => t.id === taskId ? {
             ...t,
-            comments: [...t.comments, { id: 'cm' + genId(), content, authorId: user.id, authorName: user.name, createdAt: new Date().toISOString() }],
+            comments: [...t.comments, { id: 'cm' + genId(), authorId: user.id, content, createdAt: new Date().toISOString() }],
             updatedAt: new Date().toISOString(),
           } : t),
         };
       }),
 
       addReminder: (r) => set(s => ({
-        reminders: [...s.reminders, { ...r, id: 'r' + genId(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }],
+        reminders: [...s.reminders, { ...r, id: 'r' + genId(), triggered: false, createdAt: new Date().toISOString() }],
       })),
 
       triggerReminder: (id) => set(s => ({
@@ -165,10 +174,9 @@ export const useCRMStore = create<CRMStore>()(
       getCustomerById: (id) => get().customers.find(c => c.id === id),
       getDealById: (id) => get().deals.find(d => d.id === id),
 
-      addDailyTodo: (content: string) => set(s => {
-        const uid = s.currentUser?.id;
-        s.dailyTodos.push({ id: 'dt' + genId(), content, completed: false, date: todayStr(), createdBy: uid || ADMIN });
-      }),
+      addDailyTodo: (content: string) => set(s => ({
+        dailyTodos: [...s.dailyTodos, { id: 'dt' + genId(), content, completed: false, date: todayStr(), createdBy: s.currentUser?.id || ADMIN, createdAt: new Date().toISOString() }],
+      })),
 
       toggleDailyTodo: (id) => set(s => ({
         dailyTodos: s.dailyTodos.map(t => t.id === id ? { ...t, completed: !t.completed } : t),
@@ -179,9 +187,6 @@ export const useCRMStore = create<CRMStore>()(
       })),
 
       refreshDailyTodos: () => set(s => {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yStr = yesterday.toISOString().slice(0, 10);
         const today = todayStr();
         const kept = s.dailyTodos.filter(t => t.completed || t.date === today);
         const fromBefore = s.dailyTodos.filter(t => !t.completed && t.date < today);
