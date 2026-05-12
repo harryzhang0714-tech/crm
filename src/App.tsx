@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { HashRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
@@ -13,13 +14,48 @@ import DSGallery from './pages/DSGallery';
 import { useCRMStore } from './store/crmStore';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const [hydrated, setHydrated] = useState(false);
   const currentUser = useCRMStore(s => s.currentUser);
+
+  useEffect(() => {
+    // Wait for zustand persist to rehydrate from localStorage
+    const stored = localStorage.getItem('teamcrm-store');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.state?.currentUser) {
+          useCRMStore.setState({ currentUser: parsed.state.currentUser });
+        }
+      } catch {}
+    }
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) return null; // or a loading spinner
+
   if (!currentUser) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
 function AppRoutes() {
+  const [hydrated, setHydrated] = useState(false);
   const currentUser = useCRMStore(s => s.currentUser);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('teamcrm-store');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.state?.currentUser) {
+          useCRMStore.setState({ currentUser: parsed.state.currentUser });
+        }
+      } catch {}
+    }
+    setHydrated(true);
+  }, []);
+
+  if (!hydrated) return <div style={{ background: '#1C1C1E', height: '100vh' }} />;
+
   return (
     <Routes>
       <Route path="/login" element={currentUser ? <Navigate to="/dashboard" replace /> : <Login />} />
