@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useCRMStore } from '../store/supabaseStore';
-import { DEFAULT_MEMBER } from '../store/supabaseStore';
 import { Plus, Bell, BellOff, Trash2, X, Clock } from 'lucide-react';
 import type { Reminder } from '../types';
 
@@ -173,7 +172,6 @@ export default function Reminders() {
       ) : (
         <div className="space-y-3">
           {displayReminders.map(r => {
-            const creator = DEFAULT_MEMBER;
             return (
               <div key={r.id} className={`bg-white rounded-2xl p-4 border transition-all ${r.triggered ? 'border-[#E8E6E1] opacity-60' : 'border-[#E8E6E1] hover:shadow-md'}`}>
                 <div className="flex items-start gap-3">
