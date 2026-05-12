@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { useCRMStore } from '../store/supabaseStore';
-import { DEFAULT_MEMBER } from '../store/supabaseStore';
 import { Plus, X, Search } from 'lucide-react';
 import type { Deal, DealStage } from '../types';
 
@@ -204,7 +203,6 @@ export default function Deals() {
                       className={`flex-1 rounded-xl p-2 min-h-[200px] transition-colors ${snapshot.isDraggingOver ? 'bg-[#F0EEE9]' : 'bg-[#F8F7F4]'}`}>
                       {stageDeals.map((deal, idx) => {
                         const customer = customers.find(c => c.id === deal.customerId);
-                        const owner = DEFAULT_MEMBER;
                         return (
                           <Draggable key={deal.id} draggableId={deal.id} index={idx}>
                             {(prov, snap) => (
