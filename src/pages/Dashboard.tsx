@@ -1,4 +1,4 @@
-;
+import { useCRMStore, TEAM_MEMBERS } from '../store/crmStore';
 import { useNavigate } from 'react-router-dom';
 import { Users, Handshake, CheckSquare, Bell, TrendingUp, Clock, ArrowRight, AlertCircle } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
