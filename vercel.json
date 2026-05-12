@@ -1,7 +1,7 @@
 {
-  "installCommand": "rm -f pnpm-lock.yaml && npm install --legacy-peer-deps",
-  "buildCommand": "npx vite build",
+  "buildCommand": "rm -f pnpm-lock.yaml && npm install --legacy-peer-deps && npx vite build",
   "outputDirectory": "dist",
+  "installTimeoutMs": 180000,
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
