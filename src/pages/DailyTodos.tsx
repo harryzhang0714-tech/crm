@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useCRMStore } from '../store/supabaseStore';
+import { useCRMStore } from '../store/crmStore';
 import { CheckCircle, Circle, Trash2, Plus, Sun } from 'lucide-react';
 
 export default function DailyTodos() {

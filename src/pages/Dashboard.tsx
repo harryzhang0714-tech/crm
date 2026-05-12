@@ -1,5 +1,4 @@
-import { useCRMStore } from '../store/supabaseStore';
-
+import { useCRMStore, TEAM_MEMBERS } from '../store/crmStore';
 import { useNavigate } from 'react-router-dom';
 import { Users, Handshake, CheckSquare, Bell, TrendingUp, Clock, ArrowRight, AlertCircle } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -116,7 +115,7 @@ export default function Dashboard() {
           ) : (
             <div className="space-y-3">
               {recentDeals.map((deal: any) => {
-                const owner = null;
+                const owner = TEAM_MEMBERS.find((m: any) => m.id === deal.ownerId);
                 const customer = customers.find((c: any) => c.id === deal.customerId);
                 return (
                   <div key={deal.id} className="flex items-center gap-3 p-3 rounded-xl bg-[#F8F7F4] hover:bg-[#F0EEE9] transition-colors">
@@ -146,7 +145,7 @@ export default function Dashboard() {
           </div>
           <div className="space-y-2">
             {urgentReminders.map((reminder: any) => {
-              const member = null;
+              const member = TEAM_MEMBERS.find((m: any) => m.id === reminder.createdBy);
               return (
                 <div key={reminder.id} className="flex items-center gap-3 text-sm p-3 rounded-xl bg-orange-50 border border-orange-100">
                   <Bell size={14} className="text-[#E8602C] flex-shrink-0" />

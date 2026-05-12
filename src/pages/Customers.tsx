@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { useCRMStore } from '../store/supabaseStore';
+import { useCRMStore, TEAM_MEMBERS } from '../store/crmStore';
 import { Plus, Search, Edit2, Trash2, Phone, Mail, Building, X } from 'lucide-react';
 import type { Customer } from '../types';
-
 
 const statusMap = { new: '新客户', contacted: '已联系', qualified: '已确权', lost: '已流失' };
 const statusColor = { new: '#3B82F6', contacted: '#F59E0B', qualified: '#22C55E', lost: '#EF4444' };
@@ -131,7 +130,7 @@ export default function Customers() {
         {filtered.length === 0 ? (
           <div className="py-16 text-center text-sm text-[#6B6B6B]">暂无客户记录</div>
         ) : filtered.map(c => {
-          const creator = null;
+          const creator = TEAM_MEMBERS.find(m => m.id === c.createdBy);
           return (
             <div key={c.id} className="grid grid-cols-5 gap-4 px-5 py-4 items-center border-t border-[#F0EEE9] hover:bg-[#F8F7F4] transition-colors group">
               <div className="col-span-2">

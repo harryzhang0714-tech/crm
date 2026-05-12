@@ -12,34 +12,36 @@ import DailyTodos from './pages/DailyTodos';
 import Opportunities from './pages/Opportunities';
 import FBGroups from './pages/FBGroups';
 import DSGallery from './pages/DSGallery';
-import { useCRMStore } from './store/supabaseStore';
+import { useCRMStore } from './store/crmStore';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const [hydrated, setHydrated] = useState(false);
   const currentUser = useCRMStore(s => s.currentUser);
+
+  useEffect(() => {
+    // Wait for zustand persist to rehydrate from localStorage
+    const check = () => {
+      const stored = localStorage.getItem('teamcrm-store');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed.state?.currentUser) {
+            useCRMStore.setState({ currentUser: parsed.state.currentUser });
+          }
+        } catch {}
+      }
+      setHydrated(true);
+    };
+    check();
+  }, []);
+
+  if (!hydrated) return null; // blank while checking auth
   if (!currentUser) return <Navigate to="/login" replace />;
   return <>{children}</>;
 }
 
-function LoadingScreen() {
-  return (
-    <div style={{ minHeight: '100vh', background: '#1A1A1A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center', color: 'white' }}>
-        <div style={{ fontSize: '32px', marginBottom: '8px' }}>C</div>
-        <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)' }}>加载中...</div>
-      </div>
-    </div>
-  );
-}
-
 function AppRoutes() {
-  const { initialized, currentUser, initFromSupabase } = useCRMStore();
-
-  useEffect(() => {
-    initFromSupabase();
-  }, []);
-
-  if (!initialized) return <LoadingScreen />;
-
+  const currentUser = useCRMStore(s => s.currentUser);
   return (
     <Routes>
       <Route path="/login" element={currentUser ? <Navigate to="/dashboard" replace /> : <Login />} />

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useCRMStore } from '../store/supabaseStore';
+import { useCRMStore, TEAM_MEMBERS } from '../store/crmStore';
 import { Plus, MessageSquare, CheckCircle2, Circle, Trash2, Send, X } from 'lucide-react';
 import type { Task, TaskPriority } from '../types';
 
@@ -49,7 +49,7 @@ function TaskModal({ edit, onClose }: { edit?: Task; onClose: () => void }) {
               <label className="text-xs font-medium text-[#6B6B6B] mb-1.5 block">负责人</label>
               <select value={form.assigneeId || ''} onChange={e => setForm({ ...form, assigneeId: e.target.value })}
                 className="w-full border border-[#E8E6E1] rounded-xl px-4 py-2.5 text-sm outline-none focus:border-[#E8602C] transition-colors bg-white">
-                <option value='admin'>主账号</option>
+                {TEAM_MEMBERS.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
               </select>
             </div>
             <div>
@@ -80,6 +80,7 @@ function TaskModal({ edit, onClose }: { edit?: Task; onClose: () => void }) {
 function CommentSection({ task }: { task: Task }) {
   const { currentUser, addComment } = useCRMStore();
   const [text, setText] = useState('');
+  const members = useCRMStore(s => s.getMembers)();
 
   const handleSend = () => {
     if (!text.trim()) return;
@@ -152,10 +153,10 @@ export default function Tasks() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2 mb-5">
-        {['all'].map(id => (
+        {['all', ...TEAM_MEMBERS.map(m => m.id)].map(id => (
           <button key={id} onClick={() => setFilterAssignee(id)}
             className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-colors ${filterAssignee === id ? 'bg-[#1A1A1A] text-white' : 'bg-white border border-[#E8E6E1] text-[#6B6B6B] hover:bg-[#F8F7F4]'}`}>
-            {id === 'all' ? '主账号' : '主账号'}
+            {id === 'all' ? '全部成员' : TEAM_MEMBERS.find(m => m.id === id)?.name}
           </button>
         ))}
         <button onClick={() => setShowCompleted(!showCompleted)}
@@ -170,6 +171,7 @@ export default function Tasks() {
           <div className="text-center py-16 text-sm text-[#6B6B6B]">暂无任务</div>
         )}
         {filtered.map(task => {
+          const assignee = TEAM_MEMBERS.find(m => m.id === task.assigneeId);
           const pcfg = priorityConfig[task.priority];
           const isExpanded = expandedTask === task.id;
 
