@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useCRMStore } from '../store/crmStore';
+import { useCRMStore } from '../store/supabaseStore';
 import { Plus, Search, Edit2, Trash2, X, Mail, Shield } from 'lucide-react';
 import type { Member } from '../types';
 
