@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { useCRMStore, TEAM_MEMBERS } from '../store/crmStore';
+import { useCRMStore } from '../store/supabaseStore';
+import { DEFAULT_MEMBER } from '../store/supabaseStore';
 import { Plus, X, Search } from 'lucide-react';
 import type { Deal, DealStage } from '../types';
 
@@ -119,7 +120,7 @@ function DealModal({ edit, onClose }: { edit?: Deal; onClose: () => void }) {
               <select value={form.ownerId || ''} onChange={e => setForm({ ...form, ownerId: e.target.value })}
                 className="w-full border border-[#E8E6E1] rounded-xl px-4 py-2.5 text-sm outline-none focus:border-[#E8602C] transition-colors bg-white">
                 <option value="">选择成员</option>
-                {TEAM_MEMBERS.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
+                {<option value="admin">主账号</option>}
               </select>
             </div>
           </div>
@@ -203,7 +204,7 @@ export default function Deals() {
                       className={`flex-1 rounded-xl p-2 min-h-[200px] transition-colors ${snapshot.isDraggingOver ? 'bg-[#F0EEE9]' : 'bg-[#F8F7F4]'}`}>
                       {stageDeals.map((deal, idx) => {
                         const customer = customers.find(c => c.id === deal.customerId);
-                        const owner = TEAM_MEMBERS.find(m => m.id === deal.ownerId);
+                        const owner = DEFAULT_MEMBER;
                         return (
                           <Draggable key={deal.id} draggableId={deal.id} index={idx}>
                             {(prov, snap) => (
