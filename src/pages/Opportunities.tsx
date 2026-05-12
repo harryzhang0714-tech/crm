@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ExternalLink, RefreshCw } from 'lucide-react';
 
-const OPPORTUNITY_SOURCE = 'https://0ilsgf3epj8o.space.minimaxi.com';
+const OPPORTUNITY_SOURCE = 'https://dashboard01-five.vercel.app/';
 
 export default function Opportunities() {
   const [key, setKey] = useState(0);
