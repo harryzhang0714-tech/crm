@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { supabase, TABLES } from './supabase';
+import { supabase, TABLES } from '../lib/supabase';
 import type { Member, Customer, Deal, Task, Reminder, DailyTodo } from '../types';
 
 const genId = () => Math.random().toString(36).slice(2, 10);
