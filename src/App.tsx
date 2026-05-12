@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import Customers from './pages/Customers';
 import Deals from './pages/Deals';
 import Reminders from './pages/Reminders';
+import TeamMembers from './pages/TeamMembers';
 import DailyTodos from './pages/DailyTodos';
 import Opportunities from './pages/Opportunities';
 import FBGroups from './pages/FBGroups';
@@ -33,6 +34,7 @@ function AppRoutes() {
         <Route path="fbgroups" element={<FBGroups />} />
         <Route path="gallery" element={<DSGallery />} />
         <Route path="reminders" element={<Reminders />} />
+        <Route path="team" element={<TeamMembers />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
